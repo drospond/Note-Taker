@@ -52,23 +52,24 @@ app.post("/api/notes", function (req, res) {
 
 app.delete("/api/notes/:id", function (req, res) {
   fs.readFile(path.join(__dirname, "db/db.json"), "utf8", function (err, data) {
+    const id = Number(req.params.id);
     if (err) {
       return console.log(err);
     }
     const notes = JSON.parse(data);
-    notes.push(req.body);
+    const notesPostDelete = notes.filter(note => note.id !== id);
     fs.writeFile(
       path.join(__dirname, "db/db.json"),
-      JSON.stringify(notes),
+      JSON.stringify(notesPostDelete),
       function (err) {
         if (err) {
           return console.log(err);
         }
-        console.log("Success!");
+        console.log("Delete Success!");
+        res.json(notesPostDelete);
       }
     );
   });
-  res.json();
 });
 
 app.listen(PORT, function () {
